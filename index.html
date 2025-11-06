@@ -1,3 +1,4 @@
+html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Invitation & RSVP</title>
     <link rel="stylesheet" href="index.css">
+    <style>
+        /* Additional styles to enhance contact section visibility and layout */
+        .contact-section {
+            padding: 2rem;
+            max-width: 100%;
+            margin: 0 auto;
+            text-align: left;
+            display: block !important;
+        }
+        .contact-section form {
+            max-width: 600px;
+            margin: 1em auto 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.7em;
+        }
+        .contact-section p {
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto 1em auto;
+        }
+        /* Center the navigation links */
+        .navbar {
+            justify-content: center;
+            position: relative;
+        }
+        .navbar-brand {
+            position: absolute;
+            left: 2rem;
+            margin: 0;
+        }
+        .navbar-links {
+            margin: 0;
+            justify-content: center;
+        }
+        @media (max-width: 768px) {
+            .contact-section {
+                padding: 1rem;
+            }
+            .contact-section form {
+                max-width: 100%;
+            }
+            .navbar-brand {
+                position: static;
+                left: auto;
+            }
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .navbar-links {
+                margin: 0;
+            }
+        }
+    </style>
 </head>
 <body>
   <div class="universe" aria-hidden="true">
@@ -15,7 +71,7 @@
   <nav class="navbar">
     <div class="navbar-brand">Event RSVP</div>
     <ul class="navbar-links">
-      <li><a href="#" class="nav-link nav-home active">Home</a></li>
+      <li><a href="#events" class="nav-link nav-home active">Home</a></li>
       <li><a href="#about" class="nav-link nav-about">About</a></li>
       <li><a href="#contact" class="nav-link nav-contact">Contact</a></li>
     </ul>
@@ -24,29 +80,124 @@
   <main class="main-content">
     <section class="event-cards" id="events">
       <div class="event-card" data-event="culture">
-        <img src="pictures.jpeg" alt="" width=" 100px" height="100px" style="border-radius: 100%;">
+        <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-4.0.3&w=100&h=100&fit=crop&q=80" alt="Vibrant cultural festival celebration" width="100px" height="100px" style="border-radius: 100%;">
         <h2>Culture Gala 2025</h2>
-        <p><strong>Date:</strong> October 30, 2025<br>
-        <strong>Time:</strong> 7:00 PM<br>
-        <strong>Location:</strong> Graduation Square</p>
-        <p>Celebrate world cultures with music, dance
-        <button class="book-btn">Book</button>
+        <p><strong>Date:</strong> October 30, 2025 (Event Concluded)<br>
+        <strong>Time:</strong> 7:00 PM - 11:00 PM<br>
+        <strong>Location:</strong> Graduation Square<br>
+        <strong>Capacity:</strong> 500 guests<br>
+        <strong>Ticket Price:</strong> $25 (General Admission)</p>
+        <p>Celebrate world cultures with music, dance, and vibrant performances from around the globe. Highlights include live folk dances from Asia, Latin American rhythms, African drumming sessions, and international cuisine tasting.</p>
+        <div class="event-video">
+          <h3>Event Recap Video</h3>
+          <iframe width="100%" height="200" src="https://www.youtube.com/embed/cPk1o_4TkGE" title="2025 World Cultural Dance Festival Promotional Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+        <ul class="event-highlights">
+          <li>🎭 Featured Performers: International Dance Ensemble & Global Music Collective</li>
+          <li>✂ Interactive Workshops: Cultural Craft Making & Language Taster Sessions</li>
+          <li>🤝 Networking Mixer: Connect with cultural enthusiasts and experts</li>
+        </ul>
+        <button class="book-btn" disabled>Event Concluded</button>
       </div>
       <div class="event-card" data-event="worship">
+        <img src="https://images.unsplash.com/photo-1522156373667-4c426bbd1e30?ixlib=rb-4.0.3&w=100&h=100&fit=crop&q=80" alt="Crowd at worship concert with hands raised" width="100px" height="100px" style="border-radius: 100%;">
         <h2>Worship Event 2025</h2>
         <p><strong>Date:</strong> November 15, 2025<br>
-        <strong>Time:</strong> 6:00 PM<br>
-        <strong>Location:</strong> Old Auditorium, 12 Heritage Road</p>
-        <p>Join us for a soulful evening of music, reflection, and community worship.</p>
+        <strong>Time:</strong> 6:00 PM - 9:00 PM<br>
+        <strong>Location:</strong> Old Auditorium, 12 Heritage Road<br>
+        <strong>Capacity:</strong> 300 seats<br>
+        <strong>Ticket Price:</strong> Free (Donations Welcome)</p>
+        <p>Join us for a soulful evening of music, reflection, and community worship. Experience uplifting contemporary worship songs, guided meditations, and heartfelt testimonies shared by community members.</p>
+        <div class="event-video">
+          <h3>Preview Video</h3>
+          <iframe width="100%" height="200" src="https://www.youtube.com/embed/m2lT7GNN9Jc" title="God So Good: The Full Concert Experience | Life.Church Worship" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+        <ul class="event-highlights">
+          <li>🎤 Featured Artists: Worship Band "Harmony Voices" & Guest Speaker Rev. Elena Torres</li>
+          <li>🙏 Activities: Prayer Circles, Live Acoustic Sets, and Fellowship Dinner</li>
+          <li>💫 Special Focus: Themes of Gratitude and Renewal</li>
+        </ul>
         <button class="book-btn">Book</button>
       </div>
+      <div class="event-card virtual-event" data-event="virtual-worship">
+        <img src="https://images.unsplash.com/photo-1614730321148-9678e7f7f4d1?ixlib=rb-4.0.3&w=100&h=100&fit=crop&q=80" alt="Virtual worship service on laptop screen" width="100px" height="100px" style="border-radius: 100%;">
+        <h2>Virtual Worship Gathering 2025 <span class="virtual-badge">🌐 Virtual</span></h2>
+        <p><strong>Date:</strong> November 22, 2025<br>
+        <strong>Time:</strong> 7:00 PM - 8:30 PM<br>
+        <strong>Location:</strong> Online via Zoom<br>
+        <strong>Capacity:</strong> Unlimited<br>
+        <strong>Ticket Price:</strong> Free</p>
+        <p>Connect from anywhere in the world for an inspiring virtual worship experience. Enjoy live-streamed music, interactive prayer sessions, and a message of hope and encouragement.</p>
+        <div class="event-video">
+          <h3>Sample Virtual Session</h3>
+          <iframe width="100%" height="200" src="https://www.youtube.com/embed/lPbR-xccRkU" title="Let us Worship - Live from Sacramento - Full Concert Film" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+        <ul class="event-highlights">
+          <li>📹 Featured: Live stream hosted by "Harmony Voices" & Guest Speaker via Video</li>
+          <li>💬 Interactive Features: Live Chat Prayers, Virtual Breakout Rooms for Discussion, and Post-Event Replay</li>
+          <li>🌍 Theme: "Faith Without Borders" – Building Community in the Digital Age</li>
+        </ul>
+        <button class="book-btn">RSVP</button>
+      </div>
       <div class="event-card" data-event="tech">
+        <img src="https://images.unsplash.com/photo-1517433456452-f9633a875f6f?ixlib=rb-4.0.3&w=100&h=100&fit=crop&q=80" alt="Innovative tech conference attendees" width="100px" height="100px" style="border-radius: 100%;">
         <h2>Tech Expo 2025</h2>
         <p><strong>Date:</strong> December 5, 2025<br>
-        <strong>Time:</strong> 10:00 AM<br>
-        <strong>Location:</strong> Lab 1</p>
-        <p>Explore the latest in technology, gadgets, and innovation.</p>
+        <strong>Time:</strong> 10:00 AM - 5:00 PM<br>
+        <strong>Location:</strong> Lab 1, Innovation Campus<br>
+        <strong>Capacity:</strong> Unlimited (First-Come, First-Served)<br>
+        <strong>Ticket Price:</strong> $15 (Early Bird) / $20 (Door)</p>
+        <p>Explore the latest in technology, gadgets, and innovation. Discover cutting-edge demos, startup pitches, and hands-on workshops on AI, VR, and sustainable tech solutions.</p>
+        <div class="event-video">
+          <h3>Expo Highlights</h3>
+          <iframe width="100%" height="200" src="https://www.youtube.com/embed/M-CBDQrAeOM" title="Defence & Tech Expo 2025 Chennai | India’s Innovation Hub" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+        <ul class="event-highlights">
+          <li>🎤 Keynote Speakers: Dr. Alex Rivera (AI Pioneer) & Sarah Chen (VR Innovator)</li>
+          <li>📱 Exhibits: 20+ Booths with Drones, Smart Devices, and Blockchain Demos</li>
+          <li>🤝 Networking: Panel Discussions, Speed Mentoring, and Tech Happy Hour</li>
+        </ul>
         <button class="book-btn">Book</button>
+      </div>
+      <div class="event-card virtual-event" data-event="virtual-tech">
+        <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&w=100&h=100&fit=crop&q=80" alt="Virtual AI workshop with digital screens" width="100px" height="100px" style="border-radius: 100%;">
+        <h2>Virtual AI Workshop 2025 <span class="virtual-badge">🌐 Virtual</span></h2>
+        <p><strong>Date:</strong> November 20, 2025<br>
+        <strong>Time:</strong> 2:00 PM - 4:00 PM<br>
+        <strong>Location:</strong> Online via Zoom<br>
+        <strong>Capacity:</strong> 100 participants<br>
+        <strong>Ticket Price:</strong> Free (Registration Required)</p>
+        <p>Dive into the world of artificial intelligence with interactive sessions led by industry experts. Perfect for beginners and enthusiasts alike.</p>
+        <div class="event-video">
+          <h3>Workshop Preview</h3>
+          <iframe width="100%" height="200" src="https://www.youtube.com/embed/Yq0QkCxoTHM" title="Google’s AI Course for Beginners (in 10 minutes)!" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+        <ul class="event-highlights">
+          <li>👩‍💻 Instructor: Dr. Mia Lopez, AI Specialist at TechNova</li>
+          <li>🧠 Topics: Machine Learning Basics, Ethical AI Considerations, and Simple Model Building</li>
+          <li>🔧 Interactive Elements: Live Coding Sessions, Breakout Rooms for Group Projects, and Real-Time Q&A</li>
+        </ul>
+        <button class="book-btn">RSVP</button>
+      </div>
+      <div class="event-card virtual-event" data-event="virtual-culture">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&w=100&h=100&fit=crop&q=80" alt="Virtual storytelling session with global participants" width="100px" height="100px" style="border-radius: 100%;">
+        <h2>Virtual Global Stories Night <span class="virtual-badge">🌐 Virtual</span></h2>
+        <p><strong>Date:</strong> December 10, 2025<br>
+        <strong>Time:</strong> 8:00 PM - 9:30 PM<br>
+        <strong>Location:</strong> Online via YouTube Live<br>
+        <strong>Capacity:</strong> Unlimited<br>
+        <strong>Ticket Price:</strong> Donation-based (Suggested $10)</p>
+        <p>Immerse yourself in captivating tales from storytellers around the world, fostering connection and cultural exchange from the comfort of your home.</p>
+        <div class="event-video">
+          <h3>Storytelling Preview</h3>
+          <iframe width="100%" height="200" src="https://www.youtube.com/embed/hNuAv-42jzY" title="Give me 9min, and I'll improve your storytelling skills by 176%" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+        <ul class="event-highlights">
+          <li>📖 Featured Storytellers: Voices from 5 Continents, Including Indigenous Narrators and Diaspora Authors</li>
+          <li>💬 Interactive Features: Live Chat Polls, Audience Shoutouts, and Post-Event Discussion Forum</li>
+          <li>🌍 Theme: Unity in Diversity – Stories of Resilience and Shared Humanity</li>
+        </ul>
+        <button class="book-btn">RSVP</button>
       </div>
     </section>
     <div class="rsvp-modal-overlay" id="rsvp-modal">
@@ -69,18 +220,19 @@
     </div>
     <section class="about-section" id="about" style="display:none;">
       <h2>About</h2>
-      <p>Welcome to our event platform! Book and RSVP for the best events in town. We bring together culture, worship, and technology in one place for your convenience and joy.</p>
+      <p>Welcome to our event platform! Book and RSVP for the best events in town. We bring together culture, worship, and technology in one place for your convenience and joy. Now featuring virtual events for global accessibility!</p>
       <ul style="text-align:left;max-width:400px;margin:1em auto 0 auto;">
         <li>Easy event booking</li>
         <li>Instant RSVP confirmation</li>
         <li>Modern, responsive design</li>
         <li>Secure and private</li>
+        <li>Hybrid & Virtual Options</li>
       </ul>
     </section>
     <section class="contact-section" id="contact" style="display:none;">
       <h2>Contact</h2>
       <p>Email: <a href="mailto:info@eventrsvp.com">info@eventrsvp.com</a><br>Phone: +1 234 567 8900</p>
-      <form id="contact-form" style="margin-top:1em;display:flex;flex-direction:column;gap:0.7em;max-width:340px;margin-left:auto;margin-right:auto;">
+      <form id="contact-form" style="margin-top:1em;display:flex;flex-direction:column;gap:0.7em;max-width:600px;margin-left:auto;margin-right:auto;">
         <label for="contact-name">Your Name:</label>
         <input type="text" id="contact-name" name="contact-name" required>
         <label for="contact-message">Message:</label>
@@ -90,6 +242,149 @@
       </form>
     </section>
   </main>
-  <script src="index.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Navigation handling
+      const navLinks = document.querySelectorAll('.nav-link');
+      const sections = {
+        home: document.getElementById('events'),
+        about: document.getElementById('about'),
+        contact: document.getElementById('contact')
+      };
+
+      navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          // Remove active class from all links
+          navLinks.forEach(l => l.classList.remove('active'));
+          
+          // Add active to clicked link
+          this.classList.add('active');
+          
+          // Hide all sections
+          Object.values(sections).forEach(section => {
+            section.style.display = 'none';
+          });
+          
+          // Show the corresponding section
+          const targetId = this.getAttribute('href').substring(1); // Remove #
+          const targetSection = sections[targetId] || sections.home;
+          targetSection.style.display = 'block';
+          
+          // Add active class for animations if needed
+          if (targetSection !== sections.home) {
+            targetSection.classList.add('active');
+          } else {
+            sections.home.classList.remove('active');
+          }
+        });
+      });
+
+      // Event cards book buttons
+      const bookButtons = document.querySelectorAll('.book-btn:not([disabled])');
+      const rsvpModal = document.getElementById('rsvp-modal');
+      const rsvpSection = document.getElementById('rsvp-section');
+      const rsvpEventName = document.getElementById('rsvp-event-name');
+      const rsvpClose = document.getElementById('rsvp-close');
+      const rsvpForm = document.getElementById('rsvp-form');
+      const rsvpMessage = document.getElementById('rsvp-message');
+
+      bookButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const eventCard = this.closest('.event-card');
+          const eventName = eventCard.querySelector('h2').textContent;
+          const eventDataAttr = eventCard.dataset.event;
+          rsvpEventName.textContent = eventName;
+          
+          // Store event type in a hidden input for email template
+          let hiddenEventType = rsvpForm.querySelector('[name="event_type"]');
+          if (!hiddenEventType) {
+            hiddenEventType = document.createElement('input');
+            hiddenEventType.type = 'hidden';
+            hiddenEventType.name = 'event_type';
+            rsvpForm.appendChild(hiddenEventType);
+          }
+          hiddenEventType.value = eventDataAttr;
+          
+          rsvpModal.classList.add('active');
+          rsvpSection.style.display = 'block';
+        });
+      });
+
+      // Close modal
+      rsvpClose.addEventListener('click', closeRsvpModal);
+      rsvpModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeRsvpModal();
+        }
+      });
+
+      function closeRsvpModal() {
+        rsvpModal.classList.remove('active');
+        rsvpSection.style.display = 'none';
+        rsvpForm.reset();
+        const hiddenEventType = rsvpForm.querySelector('[name="event_type"]');
+        if (hiddenEventType) {
+          rsvpForm.removeChild(hiddenEventType);
+        }
+        rsvpMessage.style.display = 'none';
+      }
+
+      // RSVP form submission (simulated)
+      rsvpForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const name = formData.get('name');
+        const attending = formData.get('attending');
+        const eventType = formData.get('event_type');
+        const eventName = rsvpEventName.textContent;
+        
+        if (name && attending && eventType) {
+          rsvpMessage.textContent = attending === 'yes' 
+            ? `Great! RSVP confirmed for ${eventName}, ${name}! We've notified the organizers.` 
+            : `Thanks for letting us know, ${name}. Hope to see you next time!`;
+          rsvpMessage.className = 'rsvp-message success';
+          rsvpMessage.style.display = 'block';
+          
+          // Simulate delay
+          setTimeout(() => {
+            closeRsvpModal();
+          }, 2000);
+        } else {
+          rsvpMessage.textContent = 'Please fill in all fields.';
+          rsvpMessage.className = 'rsvp-message error';
+          rsvpMessage.style.display = 'block';
+        }
+      });
+
+      // Contact form
+      const contactForm = document.getElementById('contact-form');
+      const contactSuccess = document.getElementById('contact-success');
+
+      contactForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const name = formData.get('contact-name');
+        const message = formData.get('contact-message');
+        
+        if (name && message) {
+          contactSuccess.textContent = 'Thank you for contacting us! Message sent successfully.';
+          contactSuccess.style.display = 'block';
+          this.reset();
+          // Simulate delay
+          setTimeout(() => {
+            contactSuccess.style.display = 'none';
+            contactSuccess.textContent = 'Thank you for contacting us!';
+          }, 3000);
+        }
+      });
+
+      // Initial setup: Show home section
+      sections.home.style.display = 'block';
+    });
+  </script>
 </body>
 </html>
