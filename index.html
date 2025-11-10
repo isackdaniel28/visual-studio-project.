@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -311,6 +311,81 @@
         .resend-btn:disabled {
             background: #ccc;
             cursor: not-allowed;
+        }
+        /* RSVP Modal Styles */
+        .rsvp-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .rsvp-modal-overlay.active {
+            display: flex;
+        }
+        .rsvp-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .rsvp-modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        .rsvp-section form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .rsvp-section label {
+            font-weight: bold;
+        }
+        .rsvp-section input, .rsvp-section select {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .rsvp-section button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .rsvp-section button:hover {
+            background: #0056b3;
+        }
+        .rsvp-message {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+            display: none;
+        }
+        .rsvp-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .rsvp-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
     </style>
 </head>
@@ -700,15 +775,36 @@
       return code;
     }
 
-    // ... (OAuth callbacks remain the same as before)
-
+    // OAuth callbacks (placeholders for demo)
     async function handleGitHubCallback() {
-      // ... (unchanged)
+      // Placeholder: Full PKCE logic for production
+      console.log('GitHub callback handled');
     }
 
     async function handleMicrosoftCallback() {
-      // ... (unchanged)
+      // Placeholder: Full PKCE logic for production
+      console.log('Microsoft callback handled');
     }
+
+    // GitHub login demo (placeholder)
+    document.addEventListener('DOMContentLoaded', function() {
+      const githubSigninBtn = document.getElementById('github-signin-btn');
+      githubSigninBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        alert('GitHub login: Integrate OAuth for production. Demo success!');
+        showAuthSuccess('githubuser', 'GitHub User', 'GitHub');
+      });
+    });
+
+    // Similar for Microsoft
+    document.addEventListener('DOMContentLoaded', function() {
+      const microsoftSigninBtn = document.getElementById('microsoft-signin-btn');
+      microsoftSigninBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        alert('Microsoft login: Integrate OAuth for production. Demo success!');
+        showAuthSuccess('msuser', 'MS User', 'Microsoft');
+      });
+    });
 
     document.addEventListener('DOMContentLoaded', function() {
       // Check for OAuth callbacks on load
@@ -723,7 +819,7 @@
         loginLink.addEventListener('click', handleLogout);
       }
 
-      // Navigation handling (unchanged)
+      // Navigation handling
       const navLinks = document.querySelectorAll('.nav-link');
       const sections = {
         home: document.getElementById('events'),
@@ -763,9 +859,6 @@
       const registerForm = document.getElementById('register-form');
       const loginMessage = document.getElementById('login-message');
       const registerMessage = document.getElementById('register-message');
-      const githubSigninBtn = document.getElementById('github-signin-btn');
-      const microsoftSigninBtn = document.getElementById('microsoft-signin-btn');
-      const googleRegisterBtn = document.getElementById('google-register-btn');
       const githubRegisterBtn = document.getElementById('github-register-btn');
       const microsoftRegisterBtn = document.getElementById('microsoft-register-btn');
 
@@ -804,29 +897,34 @@
         });
       });
 
-      // OAuth handlers (unchanged)
-      githubSigninBtn.addEventListener('click', async function(e) {
-        // ... (unchanged GitHub logic)
-      });
-
+      // Register social buttons (reuse login)
       githubRegisterBtn.addEventListener('click', async function(e) {
         e.preventDefault();
-        githubSigninBtn.click();
-      });
-
-      microsoftSigninBtn.addEventListener('click', async function(e) {
-        // ... (unchanged Microsoft logic)
+        // Simulate GitHub register as login
+        alert('GitHub register: Demo success!');
+        showAuthSuccess('githubuser', 'GitHub User', 'GitHub', 'register');
       });
 
       microsoftRegisterBtn.addEventListener('click', async function(e) {
         e.preventDefault();
-        microsoftSigninBtn.click();
+        // Simulate Microsoft register as login
+        alert('Microsoft register: Demo success!');
+        showAuthSuccess('msuser', 'MS User', 'Microsoft', 'register');
       });
 
       window.handleGoogleLogin = function(response) {
-        // ... (unchanged)
+        try {
+          const payload = JSON.parse(atob(response.credential.split('.')[1]));
+          const userEmail = payload.email;
+          const userName = payload.name;
+          showAuthSuccess(userEmail, userName, 'Google');
+        } catch (err) {
+          console.error('Google Login Error:', err);
+          showAuthError('Google login failed: Invalid token');
+        }
       };
 
+      const googleRegisterBtn = document.getElementById('google-register-btn');
       googleRegisterBtn.addEventListener('click', function() {
         document.querySelector('.g_id_signin').click();
       });
@@ -1006,14 +1104,14 @@
           }
           hiddenEventType.value = eventDataAttr;
           
-          rsvpModal.style.display = 'flex'; // Assuming CSS for .active
+          rsvpModal.classList.add('active');
           rsvpSection.style.display = 'block';
         });
       });
 
       // Close RSVP
       function closeRsvpModal() {
-        rsvpModal.style.display = 'none';
+        rsvpModal.classList.remove('active');
         rsvpSection.style.display = 'none';
         rsvpForm.reset();
         rsvpNameInput.disabled = false;
@@ -1079,10 +1177,9 @@
         }
       });
 
-      // Initial setup: Show home section
+      // Initial setup: Show home section (MOVED INSIDE DOMContentLoaded)
       sections.home.style.display = 'block';
     });
   </script>
 </body>
 </html>
-
