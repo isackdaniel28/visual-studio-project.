@@ -524,8 +524,6 @@
           <input type="email" id="reg-email" name="reg-email" required>
           <label for="reg-password">Password:</label>
           <input type="password" id="reg-password" name="reg-password" required minlength="6">
-          <label for="reg-confirm-password">Confirm Password:</label>
-          <input type="password" id="reg-confirm-password" name="reg-confirm-password" required>
           <button type="submit">Register</button>
         </form>
         <div id="register-message" class="register-message"></div>
@@ -626,7 +624,7 @@
 
     function showRegisterSuccess(email, password) {
       const registerMessage = document.getElementById('register-message');
-      registerMessage.textContent = `Account created successfully for ${email}! You can now login.`;
+      registerMessage.textContent = `Account created successfully for ${email}! Logging you in...`;
       registerMessage.className = 'register-message success';
       registerMessage.style.display = 'block';
       
@@ -637,7 +635,7 @@
         document.getElementById('email').value = email;
         document.getElementById('password').value = password;
         document.getElementById('login-form').dispatchEvent(new Event('submit'));
-      }, 2000);
+      }, 1500);
     }
 
     async function handleGitHubCallback() {
@@ -962,15 +960,9 @@
         const formData = new FormData(this);
         const email = formData.get('reg-email');
         const password = formData.get('reg-password');
-        const confirmPassword = formData.get('reg-confirm-password');
         
-        if (!email || !password || !confirmPassword) {
+        if (!email || !password) {
           showRegisterError('Please fill in all fields.');
-          return;
-        }
-
-        if (password !== confirmPassword) {
-          showRegisterError('Passwords do not match.');
           return;
         }
 
@@ -1112,4 +1104,3 @@
   </script>
 </body>
 </html>
-```
