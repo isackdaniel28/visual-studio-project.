@@ -146,10 +146,6 @@
         .auth-section button:hover {
             background: #0056b3;
         }
-        .auth-section button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
         .auth-message {
             margin-top: 1rem;
             padding: 0.5rem;
@@ -263,54 +259,6 @@
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-        }
-        /* Verification Modal */
-        .verify-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1001;
-        }
-        .verify-modal-overlay.active {
-            display: flex;
-        }
-        .verify-section {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            max-width: 400px;
-            width: 90%;
-            position: relative;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        .verify-section input {
-            text-align: center;
-            font-size: 1.2rem;
-            letter-spacing: 0.5rem;
-            margin: 1rem 0;
-        }
-        .resend-btn {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 1rem;
-        }
-        .resend-btn:hover {
-            background: #218838;
-        }
-        .resend-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
         }
     </style>
 </head>
@@ -549,17 +497,6 @@
         </div>
       </section>
     </div>
-    <!-- Email Verification Modal -->
-    <div class="verify-modal-overlay" id="verify-modal">
-      <section class="verify-section" id="verify-section">
-        <h2>Verify Your Email</h2>
-        <p>We've sent a 6-digit verification code to your email. Please enter it below.</p>
-        <input type="text" id="verify-code" maxlength="6" placeholder="000000" pattern="\d{6}">
-        <button id="verify-submit">Verify</button>
-        <button class="resend-btn" id="resend-code">Resend Code</button>
-        <div id="verify-message" class="auth-message" style="text-align: left;"></div>
-      </section>
-    </div>
     <section class="about-section" id="about" style="display:none;">
       <h2>About</h2>
       <p>Welcome to our event platform! Book and RSVP for the best events in town. We bring together culture, worship, and technology in one place for your convenience and joy. Now featuring virtual events for global accessibility!</p>
@@ -602,9 +539,6 @@
 
     // User storage
     let currentUser = localStorage.getItem('currentUser') ? JSON.parse(localStorage.getItem('currentUser')) : null;
-    let pendingUser = null; // For verification
-    let verificationCode = null;
-    let resendTimeout = null;
 
     // PKCE Helper Functions
     function generateCodeVerifier() {
@@ -621,25 +555,21 @@
         .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
     }
 
-    function generateVerificationCode() {
-      return Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit code
-    }
-
     function showAuthError(message, tab = 'login') {
-      const msgEl = document.getElementById(${tab}-message);
+      const msgEl = document.getElementById(`${tab}-message`);
       msgEl.textContent = message;
       msgEl.className = 'auth-message error';
       msgEl.style.display = 'block';
     }
 
     function showAuthSuccess(username, displayName, provider, tab = 'login') {
-      const msgEl = document.getElementById(${tab}-message);
-      msgEl.textContent = Welcome, ${displayName}! ${provider} ${tab === 'register' ? 'registration' : 'login'} successful.;
+      const msgEl = document.getElementById(`${tab}-message`);
+      msgEl.textContent = `Welcome, ${displayName}! ${provider} ${tab === 'register' ? 'registration' : 'login'} successful.`;
       msgEl.className = 'auth-message success';
       msgEl.style.display = 'block';
       
       // Store user
-      currentUser = { username, displayName, provider, verified: true };
+      currentUser = { username, displayName, provider };
       localStorage.setItem('currentUser', JSON.stringify(currentUser));
       
       // Simulate delay and close
@@ -647,38 +577,10 @@
         closeAuthModal();
         // Update navbar
         const loginLink = document.querySelector('.nav-login');
-        loginLink.textContent = Welcome, ${displayName}! (Logout);
+        loginLink.textContent = `Welcome, ${displayName}! (Logout)`;
         loginLink.href = '#logout';
         loginLink.addEventListener('click', handleLogout);
       }, 2000);
-    }
-
-    function showVerifyError(message) {
-      const msgEl = document.getElementById('verify-message');
-      msgEl.textContent = message;
-      msgEl.className = 'auth-message error';
-      msgEl.style.display = 'block';
-    }
-
-    function showVerifySuccess() {
-      const msgEl = document.getElementById('verify-message');
-      msgEl.textContent = 'Email verified successfully! You can now log in.';
-      msgEl.className = 'auth-message success';
-      msgEl.style.display = 'block';
-      
-      // Complete registration
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const userIndex = users.findIndex(u => u.email === pendingUser.email && !u.verified);
-      if (userIndex !== -1) {
-        users[userIndex].verified = true;
-        localStorage.setItem('users', JSON.stringify(users));
-      }
-      
-      // Auto-login after verification
-      setTimeout(() => {
-        closeVerifyModal();
-        showAuthSuccess(pendingUser.email, pendingUser.name, 'Email', 'register');
-      }, 1500);
     }
 
     function handleLogout(e) {
@@ -692,22 +594,129 @@
       alert('Logged out successfully!');
     }
 
-    // Email "send" simulation
-    function sendVerificationEmail(email, code, name) {
-      // In production, use EmailJS, Nodemailer (backend), or similar
-      // For demo: Alert the code (simulate email)
-      alert(Verification code sent to ${email}!\n\nCode: ${code}\n\n(For demo purposes, the code is shown here. In production, it would be emailed.));
-      return code;
-    }
-
-    // ... (OAuth callbacks remain the same as before)
-
     async function handleGitHubCallback() {
-      // ... (unchanged)
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const error = urlParams.get('error');
+      if (error) {
+        console.error('GitHub OAuth Error:', error);
+        showAuthError(`GitHub login failed: ${error}`);
+        return;
+      }
+      if (!code) return;
+
+      const verifier = sessionStorage.getItem('github_code_verifier');
+      if (!verifier) {
+        console.error('No code verifier found');
+        showAuthError('GitHub login failed: No code verifier found');
+        return;
+      }
+
+      try {
+        const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json',
+          },
+          body: new URLSearchParams({
+            client_id: GITHUB_CLIENT_ID,
+            code: code,
+            code_verifier: verifier,
+            redirect_uri: GITHUB_REDIRECT_URI,
+          }),
+        });
+
+        const tokenData = await tokenResponse.json();
+        if (tokenData.error) {
+          throw new Error(tokenData.error_description || 'Token exchange failed');
+        }
+
+        const accessToken = tokenData.access_token;
+        // Fetch user info
+        const userResponse = await fetch('https://api.github.com/user', {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+          },
+        });
+        if (!userResponse.ok) {
+          throw new Error('Failed to fetch user info');
+        }
+        const user = await userResponse.json();
+
+        // Handle successful login
+        showAuthSuccess(user.login, user.name || user.login, 'GitHub');
+
+        // Clean up URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+        sessionStorage.removeItem('github_code_verifier');
+      } catch (err) {
+        console.error('GitHub Login Error:', err);
+        showAuthError('GitHub login failed: ' + err.message);
+      }
     }
 
     async function handleMicrosoftCallback() {
-      // ... (unchanged)
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const error = urlParams.get('error');
+      if (error) {
+        console.error('Microsoft OAuth Error:', error);
+        showAuthError(`Microsoft login failed: ${error}`);
+        return;
+      }
+      if (!code) return;
+
+      const verifier = sessionStorage.getItem('microsoft_code_verifier');
+      if (!verifier) {
+        console.error('No code verifier found');
+        showAuthError('Microsoft login failed: No code verifier found');
+        return;
+      }
+
+      try {
+        const tokenResponse = await fetch(`https://login.microsoftonline.com/${MICROSOFT_TENANT}/oauth2/v2.0/token`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            client_id: MICROSOFT_CLIENT_ID,
+            code: code,
+            code_verifier: verifier,
+            redirect_uri: MICROSOFT_REDIRECT_URI,
+            grant_type: 'authorization_code',
+            scope: 'openid profile email User.Read',
+          }),
+        });
+
+        const tokenData = await tokenResponse.json();
+        if (tokenData.error) {
+          throw new Error(tokenData.error_description || 'Token exchange failed');
+        }
+
+        const accessToken = tokenData.access_token;
+        // Fetch user info
+        const userResponse = await fetch('https://graph.microsoft.com/v1.0/me', {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+          },
+        });
+        if (!userResponse.ok) {
+          throw new Error('Failed to fetch user info');
+        }
+        const user = await userResponse.json();
+
+        // Handle successful login
+        showAuthSuccess(user.userPrincipalName || user.mail, user.displayName || user.userPrincipalName, 'Microsoft');
+
+        // Clean up URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+        sessionStorage.removeItem('microsoft_code_verifier');
+      } catch (err) {
+        console.error('Microsoft Login Error:', err);
+        showAuthError('Microsoft login failed: ' + err.message);
+      }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -716,14 +725,14 @@
       handleMicrosoftCallback();
 
       // Update navbar if already logged in
-      if (currentUser && currentUser.verified) {
+      if (currentUser) {
         const loginLink = document.querySelector('.nav-login');
-        loginLink.textContent = Welcome, ${currentUser.displayName}! (Logout);
+        loginLink.textContent = `Welcome, ${currentUser.displayName}! (Logout)`;
         loginLink.href = '#logout';
         loginLink.addEventListener('click', handleLogout);
       }
 
-      // Navigation handling (unchanged)
+      // Navigation handling
       const navLinks = document.querySelectorAll('.nav-link');
       const sections = {
         home: document.getElementById('events'),
@@ -735,21 +744,34 @@
         link.addEventListener('click', function(e) {
           e.preventDefault();
           
+          // Check if it's the login link
           if (this.classList.contains('nav-login')) {
             openAuthModal();
             return;
           }
           
+          // Remove active class from all links
           navLinks.forEach(l => l.classList.remove('active'));
+          
+          // Add active to clicked link
           this.classList.add('active');
           
+          // Hide all sections
           Object.values(sections).forEach(section => {
             section.style.display = 'none';
           });
           
-          const targetId = this.getAttribute('href').substring(1);
+          // Show the corresponding section
+          const targetId = this.getAttribute('href').substring(1); // Remove #
           const targetSection = sections[targetId] || sections.home;
           targetSection.style.display = 'block';
+          
+          // Add active class for animations if needed
+          if (targetSection !== sections.home) {
+            targetSection.classList.add('active');
+          } else {
+            sections.home.classList.remove('active');
+          }
         });
       });
 
@@ -781,6 +803,7 @@
         registerForm.reset();
         loginMessage.style.display = 'none';
         registerMessage.style.display = 'none';
+        // Reset to login tab
         tabBtns.forEach(btn => btn.classList.remove('active'));
         tabContents.forEach(content => content.classList.remove('active'));
         document.querySelector('[data-tab="login"]').classList.add('active');
@@ -800,38 +823,94 @@
           tabBtns.forEach(b => b.classList.remove('active'));
           tabContents.forEach(c => c.classList.remove('active'));
           btn.classList.add('active');
-          document.getElementById(${btn.dataset.tab}-tab).classList.add('active');
+          document.getElementById(`${btn.dataset.tab}-tab`).classList.add('active');
         });
       });
 
-      // OAuth handlers (unchanged)
+      // GitHub Login Button Handler
       githubSigninBtn.addEventListener('click', async function(e) {
-        // ... (unchanged GitHub logic)
+        e.preventDefault();
+        const verifier = generateCodeVerifier();
+        const challenge = await generateCodeChallenge(verifier);
+        sessionStorage.setItem('github_code_verifier', verifier);
+
+        const state = generateCodeVerifier().substring(0, 16); // Simple state for CSRF
+        sessionStorage.setItem('github_state', state);
+
+        const params = new URLSearchParams({
+          client_id: GITHUB_CLIENT_ID,
+          redirect_uri: GITHUB_REDIRECT_URI,
+          scope: 'user',
+          state: state,
+          code_challenge: challenge,
+          code_challenge_method: 'S256',
+        });
+
+        window.location.href = `https://github.com/login/oauth/authorize?${params.toString()}`;
       });
 
+      // GitHub Register (same as login for OAuth)
       githubRegisterBtn.addEventListener('click', async function(e) {
         e.preventDefault();
+        // Reuse login handler for GitHub
         githubSigninBtn.click();
       });
 
+      // Microsoft Login Button Handler
       microsoftSigninBtn.addEventListener('click', async function(e) {
-        // ... (unchanged Microsoft logic)
+        e.preventDefault();
+        const verifier = generateCodeVerifier();
+        const challenge = await generateCodeChallenge(verifier);
+        sessionStorage.setItem('microsoft_code_verifier', verifier);
+
+        const state = generateCodeVerifier().substring(0, 16); // Simple state for CSRF
+        sessionStorage.setItem('microsoft_state', state);
+
+        const params = new URLSearchParams({
+          client_id: MICROSOFT_CLIENT_ID,
+          response_type: 'code',
+          redirect_uri: MICROSOFT_REDIRECT_URI,
+          scope: 'openid profile email User.Read',
+          state: state,
+          code_challenge: challenge,
+          code_challenge_method: 'S256',
+          response_mode: 'query',
+        });
+
+        window.location.href = `https://login.microsoftonline.com/${MICROSOFT_TENANT}/oauth2/v2.0/authorize?${params.toString()}`;
       });
 
+      // Microsoft Register (same as login for OAuth)
       microsoftRegisterBtn.addEventListener('click', async function(e) {
         e.preventDefault();
+        // Reuse login handler for Microsoft
         microsoftSigninBtn.click();
       });
 
+      // Google Login Handler
       window.handleGoogleLogin = function(response) {
-        // ... (unchanged)
+        try {
+          // In a real app, decode the JWT token (e.g., using a library) and send to backend for verification
+          // For demo: Simulate success with user email from token
+          console.log('Google Login Response:', response);
+          const payload = JSON.parse(atob(response.credential.split('.')[1]));
+          const userEmail = payload.email;
+          const userName = payload.name;
+
+          showAuthSuccess(userEmail, userName, 'Google');
+        } catch (err) {
+          console.error('Google Login Error:', err);
+          showAuthError('Google login failed: Invalid token');
+        }
       };
 
+      // Google Register (reuse login for OAuth)
       googleRegisterBtn.addEventListener('click', function() {
+        // Trigger Google sign-in button
         document.querySelector('.g_id_signin').click();
       });
 
-      // Email/Password login - Check verification
+      // Email/Password login with error handling
       loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -844,21 +923,15 @@
           return;
         }
 
+        // Demo validation: Check against demo credentials
         if (email === DEMO_EMAIL && password === DEMO_PASSWORD) {
-          // Check if verified
-          const users = JSON.parse(localStorage.getItem('users') || '[]');
-          const user = users.find(u => u.email === email);
-          if (user && !user.verified) {
-            showAuthError('Please verify your email before logging in.');
-            return;
-          }
           showAuthSuccess(email, email, 'Email');
         } else {
           showAuthError('Invalid email or password. Demo: email@test.com / password123');
         }
       });
 
-      // Registration form handling with verification
+      // Registration form handling
       registerForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -883,97 +956,23 @@
           return;
         }
         
-        // Check if user already exists
+        // Demo: Check if user already exists (simple localStorage check)
         const users = JSON.parse(localStorage.getItem('users') || '[]');
         if (users.find(u => u.email === email)) {
-          showAuthError('An account with this email already exists. Please login or use a different email.', 'register');
+          showAuthError('An account with this email already exists. Please login instead.', 'register');
           return;
         }
         
-        // Generate and "send" code
-        verificationCode = generateVerificationCode();
-        pendingUser = { name, email, password };
-        sendVerificationEmail(email, verificationCode, name);
-        
-        // Store pending user (unverified)
-        users.push({ ...pendingUser, verified: false });
+        // Add user
+        users.push({ name, email, password }); // In production, hash password and send to backend
         localStorage.setItem('users', JSON.stringify(users));
         
-        // Show verification modal
-        registerMessage.textContent = 'Registration successful! Please check your email for verification code.';
-        registerMessage.className = 'auth-message success';
-        registerMessage.style.display = 'block';
-        setTimeout(() => {
-          closeAuthModal();
-          openVerifyModal();
-        }, 1500);
+        // Treat as successful login
+        showAuthSuccess(email, name, 'Email', 'register');
       });
 
-      // Verification Modal Handling
-      const verifyModal = document.getElementById('verify-modal');
-      const verifySection = document.getElementById('verify-section');
-      const verifyCodeInput = document.getElementById('verify-code');
-      const verifySubmit = document.getElementById('verify-submit');
-      const resendBtn = document.getElementById('resend-code');
-      const verifyMessage = document.getElementById('verify-message');
-
-      function openVerifyModal() {
-        verifyModal.classList.add('active');
-        verifySection.style.display = 'block';
-        verifyCodeInput.focus();
-      }
-
-      function closeVerifyModal() {
-        verifyModal.classList.remove('active');
-        verifySection.style.display = 'none';
-        verifyCodeInput.value = '';
-        verifyMessage.style.display = 'none';
-        if (resendTimeout) {
-          clearTimeout(resendTimeout);
-        }
-      }
-
-      verifySubmit.addEventListener('click', function() {
-        const code = verifyCodeInput.value.trim();
-        if (code.length !== 6 || !/^\d{6}$/.test(code)) {
-          showVerifyError('Please enter a valid 6-digit code.');
-          return;
-        }
-        
-        if (code === verificationCode) {
-          showVerifySuccess();
-        } else {
-          showVerifyError('Invalid code. Please try again or resend.');
-          verifyCodeInput.value = '';
-        }
-      });
-
-      // Resend code
-      resendBtn.addEventListener('click', function() {
-        if (!pendingUser) return;
-        
-        resendBtn.disabled = true;
-        resendBtn.textContent = 'Resending...';
-        
-        verificationCode = generateVerificationCode();
-        sendVerificationEmail(pendingUser.email, verificationCode, pendingUser.name);
-        
-        setTimeout(() => {
-          resendBtn.disabled = false;
-          resendBtn.textContent = 'Resend Code';
-          showVerifyError('Code resent! Check your email.');
-        }, 1000);
-      });
-
-      // Allow Enter key for verification
-      verifyCodeInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-          verifySubmit.click();
-        }
-      });
-
-      // RSVP integration (require verified user)
-      const bookButtons = document.querySelectorAll('.book-btn');
+      // Event cards book buttons
+      const bookButtons = document.querySelectorAll('.book-btn:not([disabled])');
       const rsvpModal = document.getElementById('rsvp-modal');
       const rsvpSection = document.getElementById('rsvp-section');
       const rsvpEventName = document.getElementById('rsvp-event-name');
@@ -984,8 +983,8 @@
 
       bookButtons.forEach(button => {
         button.addEventListener('click', function() {
-          if (!currentUser || !currentUser.verified) {
-            alert('Please register and verify your email to RSVP.');
+          if (!currentUser) {
+            alert('Please login or register to RSVP.');
             openAuthModal();
             return;
           }
@@ -994,9 +993,11 @@
           const eventDataAttr = eventCard.dataset.event;
           rsvpEventName.textContent = eventName;
           
+          // Prefill name
           rsvpNameInput.value = currentUser.displayName;
           rsvpNameInput.disabled = true;
           
+          // Store event type in a hidden input for email template
           let hiddenEventType = rsvpForm.querySelector('[name="event_type"]');
           if (!hiddenEventType) {
             hiddenEventType = document.createElement('input');
@@ -1006,14 +1007,21 @@
           }
           hiddenEventType.value = eventDataAttr;
           
-          rsvpModal.style.display = 'flex'; // Assuming CSS for .active
+          rsvpModal.classList.add('active');
           rsvpSection.style.display = 'block';
         });
       });
 
-      // Close RSVP
+      // Close modal
+      rsvpClose.addEventListener('click', closeRsvpModal);
+      rsvpModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeRsvpModal();
+        }
+      });
+
       function closeRsvpModal() {
-        rsvpModal.style.display = 'none';
+        rsvpModal.classList.remove('active');
         rsvpSection.style.display = 'none';
         rsvpForm.reset();
         rsvpNameInput.disabled = false;
@@ -1024,13 +1032,7 @@
         rsvpMessage.style.display = 'none';
       }
 
-      rsvpClose.addEventListener('click', closeRsvpModal);
-      rsvpModal.addEventListener('click', function(e) {
-        if (e.target === this) {
-          closeRsvpModal();
-        }
-      });
-
+      // RSVP form submission (simulated)
       rsvpForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -1042,11 +1044,12 @@
         
         if (name && attending && eventType) {
           rsvpMessage.textContent = attending === 'yes' 
-            ? Great! RSVP confirmed for ${eventName}, ${name}! We've notified the organizers. 
-            : Thanks for letting us know, ${name}. Hope to see you next time!;
+            ? `Great! RSVP confirmed for ${eventName}, ${name}! We've notified the organizers.` 
+            : `Thanks for letting us know, ${name}. Hope to see you next time!`;
           rsvpMessage.className = 'rsvp-message success';
           rsvpMessage.style.display = 'block';
           
+          // Simulate delay
           setTimeout(() => {
             closeRsvpModal();
           }, 2000);
@@ -1057,7 +1060,7 @@
         }
       });
 
-      // Contact form (unchanged)
+      // Contact form
       const contactForm = document.getElementById('contact-form');
       const contactSuccess = document.getElementById('contact-success');
 
@@ -1072,6 +1075,7 @@
           contactSuccess.textContent = 'Thank you for contacting us! Message sent successfully.';
           contactSuccess.style.display = 'block';
           this.reset();
+          // Simulate delay
           setTimeout(() => {
             contactSuccess.style.display = 'none';
             contactSuccess.textContent = 'Thank you for contacting us!';
