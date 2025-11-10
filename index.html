@@ -233,6 +233,90 @@
             flex-direction: column;
             gap: 0.5rem;
         }
+        /* Registration Modal Styles */
+        .register-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .register-modal-overlay.active {
+            display: flex;
+        }
+        .register-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .register-modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        .register-section form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .register-section label {
+            font-weight: bold;
+        }
+        .register-section input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .register-section button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .register-section button:hover {
+            background: #218838;
+        }
+        .register-message {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+            display: none;
+        }
+        .register-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .register-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        .register-link a {
+            color: #007bff;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -430,6 +514,26 @@
         </div>
       </section>
     </div>
+    <!-- Registration Modal -->
+    <div class="register-modal-overlay" id="register-modal">
+      <section class="register-section" id="register-section">
+        <button class="register-modal-close" id="register-close" title="Close">&times;</button>
+        <h2>Create Your Account</h2>
+        <form id="register-form" autocomplete="off">
+          <label for="reg-email">Email:</label>
+          <input type="email" id="reg-email" name="reg-email" required>
+          <label for="reg-password">Password:</label>
+          <input type="password" id="reg-password" name="reg-password" required minlength="6">
+          <label for="reg-confirm-password">Confirm Password:</label>
+          <input type="password" id="reg-confirm-password" name="reg-confirm-password" required>
+          <button type="submit">Register</button>
+        </form>
+        <div id="register-message" class="register-message"></div>
+        <div class="register-link">
+          <a href="#" id="login-link">Already have an account? Login here</a>
+        </div>
+      </section>
+    </div>
     <section class="about-section" id="about" style="display:none;">
       <h2>About</h2>
       <p>Welcome to our event platform! Book and RSVP for the best events in town. We bring together culture, worship, and technology in one place for your convenience and joy. Now featuring virtual events for global accessibility!</p>
@@ -469,6 +573,7 @@
     // Demo credentials for email/password
     const DEMO_EMAIL = 'email@test.com';
     const DEMO_PASSWORD = 'password123';
+    const USERS = JSON.parse(localStorage.getItem('users') || '[]'); // Simulated user storage
 
     // PKCE Helper Functions
     function generateCodeVerifier() {
@@ -509,6 +614,29 @@
         loginLink.classList.add('nav-logout');
         // Optional: Store user info in localStorage
         localStorage.setItem('user', JSON.stringify({name: displayName, username: username, provider: provider}));
+      }, 2000);
+    }
+
+    function showRegisterError(message) {
+      const registerMessage = document.getElementById('register-message');
+      registerMessage.textContent = message;
+      registerMessage.className = 'register-message error';
+      registerMessage.style.display = 'block';
+    }
+
+    function showRegisterSuccess(email, password) {
+      const registerMessage = document.getElementById('register-message');
+      registerMessage.textContent = `Account created successfully for ${email}! You can now login.`;
+      registerMessage.className = 'register-message success';
+      registerMessage.style.display = 'block';
+      
+      // Auto-login after registration
+      setTimeout(() => {
+        closeRegisterModal();
+        // Simulate login with new credentials
+        document.getElementById('email').value = email;
+        document.getElementById('password').value = password;
+        document.getElementById('login-form').dispatchEvent(new Event('submit'));
       }, 2000);
     }
 
@@ -714,6 +842,34 @@
         }
       });
 
+      // Registration Modal Handling
+      const registerModal = document.getElementById('register-modal');
+      const registerSection = document.getElementById('register-section');
+      const registerClose = document.getElementById('register-close');
+      const registerForm = document.getElementById('register-form');
+      const registerMessage = document.getElementById('register-message');
+      const loginLink = document.getElementById('login-link');
+
+      function openRegisterModal() {
+        registerModal.classList.add('active');
+        registerSection.style.display = 'block';
+        closeLoginModal(); // Close login if open
+      }
+
+      function closeRegisterModal() {
+        registerModal.classList.remove('active');
+        registerSection.style.display = 'none';
+        registerForm.reset();
+        registerMessage.style.display = 'none';
+      }
+
+      registerClose.addEventListener('click', closeRegisterModal);
+      registerModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeRegisterModal();
+        }
+      });
+
       // GitHub Login Button Handler
       githubSigninBtn.addEventListener('click', async function(e) {
         e.preventDefault();
@@ -790,18 +946,63 @@
           return;
         }
 
-        // Demo validation: Check against demo credentials
-        if (email === DEMO_EMAIL && password === DEMO_PASSWORD) {
+        // Check against demo or stored users
+        const user = USERS.find(u => u.email === email && u.password === password);
+        if (user || (email === DEMO_EMAIL && password === DEMO_PASSWORD)) {
           showLoginSuccess(email, email, 'Email');
         } else {
           showLoginError('Invalid email or password. Demo: email@test.com / password123');
         }
       });
 
-      // Register link (placeholder - could open another modal)
+      // Registration form handling
+      registerForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const email = formData.get('reg-email');
+        const password = formData.get('reg-password');
+        const confirmPassword = formData.get('reg-confirm-password');
+        
+        if (!email || !password || !confirmPassword) {
+          showRegisterError('Please fill in all fields.');
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          showRegisterError('Passwords do not match.');
+          return;
+        }
+
+        if (password.length < 6) {
+          showRegisterError('Password must be at least 6 characters long.');
+          return;
+        }
+
+        // Check if user already exists
+        if (USERS.find(u => u.email === email)) {
+          showRegisterError('An account with this email already exists. Please login.');
+          return;
+        }
+
+        // Simulate registration: Add to localStorage
+        const newUser = { email, password };
+        USERS.push(newUser);
+        localStorage.setItem('users', JSON.stringify(USERS));
+
+        showRegisterSuccess(email, password);
+      });
+
+      // Register link opens register modal
       registerLink.addEventListener('click', function(e) {
         e.preventDefault();
-        alert('Registration feature coming soon! For now, use demo credentials: email@test.com / password123');
+        openRegisterModal();
+      });
+
+      // Login link from register opens login modal
+      loginLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        openLoginModal();
       });
 
       // Event cards book buttons
