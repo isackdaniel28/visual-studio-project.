@@ -317,9 +317,54 @@
             color: #007bff;
             text-decoration: none;
         }
+        /* Login Required Overlay */
+        .login-required-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            flex-direction: column;
+            text-align: center;
+            color: white;
+        }
+        .login-required-overlay.hidden {
+            display: none;
+        }
+        .login-required-overlay h2 {
+            margin-bottom: 1rem;
+        }
+        .login-required-overlay p {
+            margin-bottom: 2rem;
+            max-width: 400px;
+        }
+        .login-required-overlay button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .login-required-overlay button:hover {
+            background: #0056b3;
+        }
     </style>
 </head>
 <body>
+  <!-- Login Required Overlay -->
+  <div class="login-required-overlay" id="login-required-overlay">
+    <h2>Welcome to Event RSVP!</h2>
+    <p>Please log in to your account to access events and start RSVPing. If you don't have an account, you can register during the login process.</p>
+    <button onclick="openLoginModal()">Login or Register</button>
+  </div>
+
   <div class="universe" aria-hidden="true">
     <div class="stars"></div>
     <div class="sun"></div>
@@ -335,7 +380,7 @@
     </ul>
   
   </nav>
-  <main class="main-content">
+  <main class="main-content" id="main-content" style="display: none;">
     <section class="event-cards" id="events">
       <div class="event-card" data-event="culture">
         <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-4.0.3&w=100&h=100&fit=crop&q=80" alt="Vibrant cultural festival celebration" width="100px" height="100px" style="border-radius: 100%;">
@@ -573,6 +618,23 @@
     const DEMO_PASSWORD = 'password123';
     const USERS = JSON.parse(localStorage.getItem('users') || '[]'); // Simulated user storage
 
+    // Function to check if user is logged in
+    function isLoggedIn() {
+      return localStorage.getItem('user') !== null;
+    }
+
+    // Function to show main content
+    function showMainContent() {
+      document.getElementById('main-content').style.display = 'block';
+      document.getElementById('login-required-overlay').classList.add('hidden');
+    }
+
+    // Function to hide main content
+    function hideMainContent() {
+      document.getElementById('main-content').style.display = 'none';
+      document.getElementById('login-required-overlay').classList.remove('hidden');
+    }
+
     // PKCE Helper Functions
     function generateCodeVerifier() {
       const array = new Uint8Array(32);
@@ -601,6 +663,9 @@
       loginMessage.className = 'login-message success';
       loginMessage.style.display = 'block';
       
+      // Store user info in localStorage
+      localStorage.setItem('user', JSON.stringify({name: displayName, username: username, provider: provider}));
+      
       // Simulate delay and close
       setTimeout(() => {
         closeLoginModal();
@@ -610,8 +675,8 @@
         loginLink.href = '#logout';
         loginLink.classList.remove('nav-login');
         loginLink.classList.add('nav-logout');
-        // Optional: Store user info in localStorage
-        localStorage.setItem('user', JSON.stringify({name: displayName, username: username, provider: provider}));
+        // Show main content
+        showMainContent();
       }, 2000);
     }
 
@@ -768,6 +833,22 @@
       handleGitHubCallback();
       handleMicrosoftCallback();
 
+      // Check login status on load
+      if (isLoggedIn()) {
+        showMainContent();
+        // Restore navbar state if logged in
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+          const loginLink = document.querySelector('.nav-login');
+          loginLink.textContent = `Welcome, ${user.name}`;
+          loginLink.href = '#logout';
+          loginLink.classList.remove('nav-login');
+          loginLink.classList.add('nav-logout');
+        }
+      } else {
+        hideMainContent();
+      }
+
       // Navigation handling
       const navLinks = document.querySelectorAll('.nav-link');
       const sections = {
@@ -783,6 +864,18 @@
           // Check if it's the login link
           if (this.classList.contains('nav-login')) {
             openLoginModal();
+            return;
+          }
+          
+          // For logout
+          if (this.href === '#logout') {
+            localStorage.removeItem('user');
+            hideMainContent();
+            // Reset navbar
+            this.textContent = 'Login';
+            this.href = '#login';
+            this.classList.remove('nav-logout');
+            this.classList.add('nav-login');
             return;
           }
           
@@ -821,10 +914,10 @@
       const githubSigninBtn = document.getElementById('github-signin-btn');
       const microsoftSigninBtn = document.getElementById('microsoft-signin-btn');
 
-      function openLoginModal() {
+      window.openLoginModal = function() {
         loginModal.classList.add('active');
         loginSection.style.display = 'block';
-      }
+      };
 
       function closeLoginModal() {
         loginModal.classList.remove('active');
@@ -997,7 +1090,7 @@
         openLoginModal();
       });
 
-      // Event cards book buttons
+      // Event cards book buttons - require login
       const bookButtons = document.querySelectorAll('.book-btn:not([disabled])');
       const rsvpModal = document.getElementById('rsvp-modal');
       const rsvpSection = document.getElementById('rsvp-section');
@@ -1008,10 +1101,18 @@
 
       bookButtons.forEach(button => {
         button.addEventListener('click', function() {
+          if (!isLoggedIn()) {
+            openLoginModal();
+            return;
+          }
           const eventCard = this.closest('.event-card');
           const eventName = eventCard.querySelector('h2').textContent;
           const eventDataAttr = eventCard.dataset.event;
           rsvpEventName.textContent = eventName;
+          
+          // Prefill name with logged-in user
+          const user = JSON.parse(localStorage.getItem('user'));
+          document.getElementById('name').value = user.name;
           
           // Store event type in a hidden input for email template
           let hiddenEventType = rsvpForm.querySelector('[name="event_type"]');
@@ -1098,8 +1199,10 @@
         }
       });
 
-      // Initial setup: Show home section
-      sections.home.style.display = 'block';
+      // Initial setup: Show home section if logged in
+      if (isLoggedIn()) {
+        sections.home.style.display = 'block';
+      }
     });
   </script>
 </body>
