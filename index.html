@@ -1,6 +1,3 @@
-
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -364,7 +361,90 @@
         .login-required-overlay button:hover {
             background: #0056b3;
         }
+
+        /* RSVP Modal Styles */
+        .rsvp-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .rsvp-modal-overlay.active {
+            display: flex;
+        }
+        .rsvp-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .rsvp-modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        .rsvp-section form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .rsvp-section label {
+            font-weight: bold;
+        }
+        .rsvp-section input, .rsvp-section select {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .rsvp-section button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .rsvp-section button:hover {
+            background: #0056b3;
+        }
+        .rsvp-message {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+            display: none;
+        }
+        .rsvp-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .rsvp-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
     </style>
+    <script>
+        // Global function for overlay button
+        function openLoginModal() {
+            document.getElementById('login-modal').classList.add('active');
+            document.getElementById('login-section').style.display = 'block';
+        }
+    </script>
 </head>
 <body>
     <!-- Login Required Overlay -->
@@ -392,7 +472,6 @@
 
     <main class="main-content" id="main-content" style="display: none;">
         <section class="event-cards" id="events">
-            <!-- Event Cards Here - Keeping as is for brevity -->
             <div class="event-card" data-event="culture">
                 <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-4.0.3&w=100&h=100&fit=crop&q=80" alt="Vibrant cultural festival celebration" width="100px" height="100px" style="border-radius: 100%;">
                 <h2>Culture Gala 2026</h2>
@@ -413,7 +492,106 @@
                 </ul>
                 <button class="book-btn">Book</button>
             </div>
-            <!-- Other event cards... (omitted for brevity, but include all in full code) -->
+            <div class="event-card" data-event="worship">
+                <img src="worship event.jpeg" alt="Crowd at worship concert with hands raised" width="100px" height="100px" style="border-radius: 100%;">
+                <h2>Worship Event 2026</h2>
+                <p><strong>Date:</strong> November 15, 2026<br>
+                <strong>Time:</strong> 6:00 PM - 9:00 PM<br>
+                <strong>Location:</strong> Old Auditorium, 12 Heritage Road<br>
+                <strong>Capacity:</strong> 300 seats<br>
+                <strong>Ticket Price:</strong> Free (Donations Welcome)</p>
+                <p>Join us for a soulful evening of music, reflection, and community worship. Experience uplifting contemporary worship songs, guided meditations, and heartfelt testimonies shared by community members.</p>
+                <div class="event-video">
+                    <h3>Preview Video</h3>
+                    <iframe width="100%" height="200" src="https://www.youtube.com/embed/m2lT7GNN9Jc" title="God So Good: The Full Concert Experience | Life.Church Worship" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+                <ul class="event-highlights">
+                    <li>🎤 Featured Artists: Worship Band "Harmony Voices" & Guest Speaker Rev. Elena Torres</li>
+                    <li>🙏 Activities: Prayer Circles, Live Acoustic Sets, and Fellowship Dinner</li>
+                    <li>💫 Special Focus: Themes of Gratitude and Renewal</li>
+                </ul>
+                <button class="book-btn">Book</button>
+            </div>
+            <div class="event-card virtual-event" data-event="virtual-worship">
+                <img src="worship.jpeg" alt="Virtual worship service on laptop screen" width="100px" height="100px" style="border-radius: 100%;">
+                <h2>Virtual Worship Gathering 2026 <span class="virtual-badge">🌐 Virtual</span></h2>
+                <p><strong>Date:</strong> November 22, 2026<br>
+                <strong>Time:</strong> 7:00 PM - 8:30 PM<br>
+                <strong>Location:</strong> Online via Zoom<br>
+                <strong>Capacity:</strong> Unlimited<br>
+                <strong>Ticket Price:</strong> Free</p>
+                <p>Connect from anywhere in the world for an inspiring virtual worship experience. Enjoy live-streamed music, interactive prayer sessions, and a message of hope and encouragement.</p>
+                <div class="event-video">
+                    <h3>Sample Virtual Session</h3>
+                    <iframe width="100%" height="200" src="https://www.youtube.com/embed/lPbR-xccRkU" title="Let us Worship - Live from Sacramento - Full Concert Film" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+                <ul class="event-highlights">
+                    <li>📹 Featured: Live stream hosted by "Harmony Voices" & Guest Speaker via Video</li>
+                    <li>💬 Interactive Features: Live Chat Prayers, Virtual Breakout Rooms for Discussion, and Post-Event Replay</li>
+                    <li>🌍 Theme: "Faith Without Borders" – Building Community in the Digital Age</li>
+                </ul>
+                <button class="book-btn">Book</button>
+            </div>
+            <div class="event-card" data-event="tech">
+                <img src="https://images.unsplash.com/photo-1517433456452-f9633a875f6f?ixlib=rb-4.0.3&w=100&h=100&fit=crop&q=80" alt="Innovative tech conference attendees" width="100px" height="100px" style="border-radius: 100%;">
+                <h2>Tech Expo 2025</h2>
+                <p><strong>Date:</strong> December 5, 2026<br>
+                <strong>Time:</strong> 10:00 AM - 5:00 PM<br>
+                <strong>Location:</strong> Lab 1, Innovation Campus<br>
+                <strong>Capacity:</strong> Unlimited (First-Come, First-Served)<br>
+                <strong>Ticket Price:</strong> $15 (Early Bird) / $20 (Door)</p>
+                <p>Explore the latest in technology, gadgets, and innovation. Discover cutting-edge demos, startup pitches, and hands-on workshops on AI, VR, and sustainable tech solutions.</p>
+                <div class="event-video">
+                    <h3>Expo Highlights</h3>
+                    <iframe width="100%" height="200" src="https://www.youtube.com/embed/M-CBDQrAeOM" title="Defence & Tech Expo 2025 Chennai | India’s Innovation Hub" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+                <ul class="event-highlights">
+                    <li>🎤 Keynote Speakers: Dr. Alex Rivera (AI Pioneer) & Sarah Chen (VR Innovator)</li>
+                    <li>📱 Exhibits: 20+ Booths with Drones, Smart Devices, and Blockchain Demos</li>
+                    <li>🤝 Networking: Panel Discussions, Speed Mentoring, and Tech Happy Hour</li>
+                </ul>
+                <button class="book-btn">Book</button>
+            </div>
+            <div class="event-card virtual-event" data-event="virtual-tech">
+                <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&w=100&h=100&fit=crop&q=80" alt="Virtual AI workshop with digital screens" width="100px" height="100px" style="border-radius: 100%;">
+                <h2>Virtual AI Workshop 2025 <span class="virtual-badge">🌐 Virtual</span></h2>
+                <p><strong>Date:</strong> November 20, 2026<br>
+                <strong>Time:</strong> 2:00 PM - 4:00 PM<br>
+                <strong>Location:</strong> Online via Zoom<br>
+                <strong>Capacity:</strong> 100 participants<br>
+                <strong>Ticket Price:</strong> Free (Registration Required)</p>
+                <p>Dive into the world of artificial intelligence with interactive sessions led by industry experts. Perfect for beginners and enthusiasts alike.</p>
+                <div class="event-video">
+                    <h3>Workshop Preview</h3>
+                    <iframe width="100%" height="200" src="https://www.youtube.com/embed/Yq0QkCxoTHM" title="Google’s AI Course for Beginners (in 10 minutes)!" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+                <ul class="event-highlights">
+                    <li>👩‍💻 Instructor: Dr. Mia Lopez, AI Specialist at TechNova</li>
+                    <li>🧠 Topics: Machine Learning Basics, Ethical AI Considerations, and Simple Model Building</li>
+                    <li>🔧 Interactive Elements: Live Coding Sessions, Breakout Rooms for Group Projects, and Real-Time Q&A</li>
+                </ul>
+                <button class="book-btn">Book</button>
+            </div>
+            <div class="event-card virtual-event" data-event="virtual-culture">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&w=100&h=100&fit=crop&q=80" alt="Virtual storytelling session with global participants" width="100px" height="100px" style="border-radius: 100%;">
+                <h2>Virtual Global Stories Night <span class="virtual-badge">🌐 Virtual</span></h2>
+                <p><strong>Date:</strong> December 10, 2026<br>
+                <strong>Time:</strong> 8:00 PM - 9:30 PM<br>
+                <strong>Location:</strong> Online via YouTube Live<br>
+                <strong>Capacity:</strong> Unlimited<br>
+                <strong>Ticket Price:</strong> Donation-based (Suggested $10)</p>
+                <p>Immerse yourself in captivating tales from storytellers around the world, fostering connection and cultural exchange from the comfort of your home.</p>
+                <div class="event-video">
+                    <h3>Storytelling Preview</h3>
+                    <iframe width="100%" height="200" src="https://www.youtube.com/embed/hNuAv-42jzY" title="Give me 9min, and I'll improve your storytelling skills by 176%" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+                <ul class="event-highlights">
+                    <li>📖 Featured Storytellers: Voices from 5 Continents, Including Indigenous Narrators and Diaspora Authors</li>
+                    <li>💬 Interactive Features: Live Chat Polls, Audience Shoutouts, and Post-Event Discussion Forum</li>
+                    <li>🌍 Theme: Unity in Diversity – Stories of Resilience and Shared Humanity</li>
+                </ul>
+                <button class="book-btn">Book</button>
+            </div>
         </section>
 
         <!-- RSVP Modal -->
@@ -508,7 +686,7 @@
         <section class="contact-section" id="contact" style="display:none;">
             <h2>Contact</h2>
             <p>Email: <a href="mailto:indekeja@yahoo.com">indekeja@yahoo.com</a><br>Phone: +255748815338</p>
-            <form id="contact-form" style="margin-top:1em;display:flex;flex-direction:column;gap:0.7em;max-width:600px;margin-left:auto;margin-right:auto;">
+            <form id="contact-form">
                 <label for="contact-name">Your Name:</label>
                 <input type="text" id="contact-name" name="contact-name" required>
                 <label for="contact-message">Message:</label>
@@ -717,7 +895,7 @@
         }
 
         // Google Login Handler
-        window.handleGoogleLogin = function(response) {
+        function handleGoogleLogin(response) {
             try {
                 const payload = JSON.parse(atob(response.credential.split('.')[1]));
                 const userEmail = payload.email;
@@ -727,10 +905,12 @@
                 console.error('Google Login Error:', err);
                 showLoginError('Google login failed: Invalid token');
             }
-        };
+        }
 
         // Document Ready
         document.addEventListener('DOMContentLoaded', function() {
+            window.handleGoogleLogin = handleGoogleLogin; // Make global for Google script
+
             handleGitHubCallback();
             handleMicrosoftCallback();
 
@@ -744,6 +924,7 @@
                     loginLink.classList.remove('nav-login');
                     loginLink.classList.add('nav-logout');
                 }
+                document.getElementById('events').style.display = 'block';
             } else {
                 hideMainContent();
             }
@@ -795,11 +976,6 @@
             });
 
             // Modal Handlers
-            window.openLoginModal = function() {
-                document.getElementById('login-modal').classList.add('active');
-                document.getElementById('login-section').style.display = 'block';
-            };
-
             function closeLoginModal() {
                 document.getElementById('login-modal').classList.remove('active');
                 document.getElementById('login-section').style.display = 'none';
@@ -930,12 +1106,106 @@
                 openLoginModal();
             });
 
-            // RSVP and Contact Forms (keeping logic as is)
-            // ... (omitted for brevity, but include full logic in actual code)
+            // RSVP Modal Handlers
+            const bookButtons = document.querySelectorAll('.book-btn');
+            const rsvpModal = document.getElementById('rsvp-modal');
+            const rsvpSection = document.getElementById('rsvp-section');
+            const rsvpEventName = document.getElementById('rsvp-event-name');
+            const rsvpClose = document.getElementById('rsvp-close');
+            const rsvpForm = document.getElementById('rsvp-form');
+            const rsvpMessage = document.getElementById('rsvp-message');
 
-            if (isLoggedIn()) {
-                sections.home.style.display = 'block';
+            bookButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (!isLoggedIn()) {
+                        openLoginModal();
+                        return;
+                    }
+                    const eventCard = this.closest('.event-card');
+                    const eventName = eventCard.querySelector('h2').textContent;
+                    const eventDataAttr = eventCard.dataset.event;
+                    rsvpEventName.textContent = eventName;
+                    
+                    // Prefill name with logged-in user
+                    const user = JSON.parse(localStorage.getItem('user'));
+                    document.getElementById('name').value = user.name;
+                    
+                    // Store event type
+                    let hiddenEventType = rsvpForm.querySelector('[name="event_type"]');
+                    if (!hiddenEventType) {
+                        hiddenEventType = document.createElement('input');
+                        hiddenEventType.type = 'hidden';
+                        hiddenEventType.name = 'event_type';
+                        rsvpForm.appendChild(hiddenEventType);
+                    }
+                    hiddenEventType.value = eventDataAttr;
+                    
+                    rsvpModal.classList.add('active');
+                    rsvpSection.style.display = 'block';
+                });
+            });
+
+            function closeRsvpModal() {
+                rsvpModal.classList.remove('active');
+                rsvpSection.style.display = 'none';
+                rsvpForm.reset();
+                const hiddenEventType = rsvpForm.querySelector('[name="event_type"]');
+                if (hiddenEventType) {
+                    rsvpForm.removeChild(hiddenEventType);
+                }
+                rsvpMessage.style.display = 'none';
             }
+
+            rsvpClose.addEventListener('click', closeRsvpModal);
+            rsvpModal.addEventListener('click', function(e) {
+                if (e.target === this) closeRsvpModal();
+            });
+
+            rsvpForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const name = formData.get('name');
+                const attending = formData.get('attending');
+                const eventType = formData.get('event_type');
+                const eventName = rsvpEventName.textContent;
+                
+                if (name && attending && eventType) {
+                    rsvpMessage.textContent = attending === 'yes' 
+                        ? `Great! RSVP confirmed for ${eventName}, ${name}! We've notified the organizers.` 
+                        : `Thanks for letting us know, ${name}. Hope to see you next time!`;
+                    rsvpMessage.className = 'rsvp-message success';
+                    rsvpMessage.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        closeRsvpModal();
+                    }, 2000);
+                } else {
+                    rsvpMessage.textContent = 'Please fill in all fields.';
+                    rsvpMessage.className = 'rsvp-message error';
+                    rsvpMessage.style.display = 'block';
+                }
+            });
+
+            // Contact Form
+            const contactForm = document.getElementById('contact-form');
+            const contactSuccess = document.getElementById('contact-success');
+
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const name = formData.get('contact-name');
+                const message = formData.get('contact-message');
+                
+                if (name && message) {
+                    contactSuccess.textContent = 'Thank you for contacting us! Message sent successfully.';
+                    contactSuccess.style.display = 'block';
+                    this.reset();
+                    setTimeout(() => {
+                        contactSuccess.style.display = 'none';
+                        contactSuccess.textContent = 'Thank you for contacting us!';
+                    }, 3000);
+                }
+            });
         });
     </script>
 </body>
