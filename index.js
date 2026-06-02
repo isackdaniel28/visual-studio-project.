@@ -10,7 +10,7 @@ if (registerBtn) {
     setTimeout(() => {
       registerBtn.textContent = 'Registered ✅';
       if (successAlert) {
-        successAlert.style.display = 'block';
+        successAlert.style.display = 'enable';
       }
     }, 1500);
   });
@@ -40,10 +40,10 @@ navLinks.forEach(link => {
       (target === "events" || target === "home") ? "grid" : "none";
     
     document.getElementById("about").style.display = 
-      target === "about" ? "block" : "none";
+      target === "about" ? "enable" : "none";
     
     document.getElementById("contact").style.display = 
-      target === "contact" ? "block" : "none";
+      target === "contact" ? "enable" : "none";
   });
 });
 
@@ -54,7 +54,7 @@ if (contactForm) {
     e.preventDefault();
     contactForm.reset();
     const success = document.getElementById("contact-success");
-    if (success) success.style.display = "block";
+    if (success) success.style.display = "enable";
   });
 }
 
